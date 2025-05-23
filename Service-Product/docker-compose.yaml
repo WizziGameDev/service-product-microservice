@@ -1,0 +1,72 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: db_tubes_product
+    ports:
+      - "3392:3306"
+    networks:
+      - app-network-microservice
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6392:6379"
+    networks:
+      - app-network-microservice
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - "8083:80"
+    depends_on:
+      - mysql
+    networks:
+      - app-network-microservice
+
+  service-product:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: service-product
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: db_tubes_product
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: 12345
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SERVER_PORT: 9003
+      LOG_LEVEL_CACHE: TRACE
+      LOG_LEVEL: DEBUG
+      LOG_LEVEL_WEB: DEBUG
+    ports:
+      - "9003:9003"
+    networks:
+      - app-network-microservice
+    restart: on-failure
+
+networks:
+  app-network-microservice:
+    external: true
