@@ -61,8 +61,25 @@ services:
       LOG_LEVEL_CACHE: TRACE
       LOG_LEVEL: DEBUG
       LOG_LEVEL_WEB: DEBUG
-    ports:
-      - "9003:9003"
+#    ports:
+#      - "9003:9003" -> akses luar ga bisa (lewat API Gateway)
+    labels:
+      - "traefik.enable=true"
+
+      # Router utama service-product API
+      - "traefik.http.routers.service-product.rule=PathPrefix(`/api/v1/products`)"
+      - "traefik.http.services.service-product.loadbalancer.server.port=9003"
+      - "traefik.http.routers.service-product.middlewares=ratelimit"
+
+      # Swagger UI router
+      - "traefik.http.routers.swagger-product.rule=PathPrefix(`/api/v1/product/swagger-ui`)"
+      - "traefik.http.routers.swagger-product.entrypoints=web"
+      - "traefik.http.routers.swagger-product.service=service-product"
+
+      # OpenAPI docs router
+      - "traefik.http.routers.api-docs.rule=PathPrefix(`/api/v1/product/v3/api-docs`)"
+      - "traefik.http.routers.api-docs.entrypoints=web"
+      - "traefik.http.routers.api-docs.service=service-product"
     networks:
       - app-network-microservice
     restart: on-failure
