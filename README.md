@@ -38,9 +38,8 @@ If the application fails to run or cannot connect to the database or other servi
 
 - ✅ Make sure Docker is running and the network `app-network-microservice` has been created  
 - 🔍 Check container logs using the command `docker-compose logs`  
-- 🔄 Restart containers using `docker-compose restart`  
-- 🚪 Ensure the port used (e.g., 9003 for the product service) is not conflicting with other applications on your computer  
 - 🔄 If the product service fails because MySQL is not ready, run `docker-compose up -d` again after MySQL status is healthy
+- 🚪 Ensure the port used (e.g., 9003 for the product service) is not conflicting with other applications on your computer
 
 ---
 
