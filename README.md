@@ -1,50 +1,50 @@
 
 # 🚀 Service Product Microservice
 
-## ⚠️ Prasyarat
-Sebelum menjalankan aplikasi, pastikan Anda sudah membuat network Docker yang digunakan oleh service-service di dalam `docker-compose.yml`.  
-Jika belum, jalankan perintah berikut:
+## ⚠️ Prerequisites
+Before running the application, make sure you have created the Docker network used by the services in the `docker-compose.yml`.  
+If not, run the following command:
 
 ```bash
 sudo docker network create app-network-microservice
 ```
 
-## ▶️ Menjalankan Aplikasi
-Jalankan perintah berikut untuk menjalankan semua service secara otomatis:
+## ▶️ Running the Application
+Run the following command to start all services automatically:
 
 ```bash
 docker-compose up -d
 ```
 
-Service yang akan berjalan otomatis:
+The following services will run automatically:
 - 🐬 MySQL (Database)
-- 🖥️ PhpMyAdmin (Admin database via web)
-- ⚡ Redis (Cache dan storage)
-- 📦 Service Product Microservice (API produk)
+- 🖥️ PhpMyAdmin (Database web admin)
+- ⚡ Redis (Cache and storage)
+- 📦 Product Service Microservice (Product API)
 
-## 📖 Cara Mengakses Swagger UI (API Documentation)
-Setelah aplikasi berjalan, Anda dapat mengakses dokumentasi REST API menggunakan Swagger UI dengan membuka URL:
+## 📖 How to Access Swagger UI (API Documentation)
+Once the application is running, you can access the REST API documentation using Swagger UI by opening the URL:
 
 ```
 http://localhost:9003/swagger-ui/index.html
 ```
 
-Di halaman ini Anda dapat melihat daftar endpoint API, melakukan testing request langsung dari browser, serta mempelajari model request dan response.
+On this page, you can see the list of API endpoints, test requests directly from the browser, and explore request and response models.
 
 ---
 
 ## 🛠️ Troubleshooting
-Jika aplikasi gagal dijalankan atau tidak bisa terhubung ke database/service lainnya, coba hal berikut:
+If the application fails to run or cannot connect to the database or other services, try the following:
 
-- ✅ Pastikan Docker sudah berjalan dan network `app-network-microservice` sudah dibuat  
-- 🔍 Periksa log container dengan perintah `docker-compose logs`  
-- 🔄 Restart container dengan `docker-compose restart`  
-- 🚪 Pastikan port yang digunakan (misal 9003 untuk service produk) tidak bentrok dengan aplikasi lain di komputer Anda
-- Jika product-service gagal karena sql belum siap lakukan perintah `docker-compose up -d` setelah mysql status healthy
+- ✅ Make sure Docker is running and the network `app-network-microservice` has been created  
+- 🔍 Check container logs using the command `docker-compose logs`  
+- 🔄 Restart containers using `docker-compose restart`  
+- 🚪 Ensure the port used (e.g., 9003 for the product service) is not conflicting with other applications on your computer  
+- 🔄 If the product service fails because MySQL is not ready, run `docker-compose up -d` again after MySQL status is healthy
 
 ---
 
-## 📞 Kontak
-Jika ada masalah atau pertanyaan, silakan hubungi tim pengembang di:
+## 📞 Contact
+If you have any issues or questions, please contact the development team at:
 
 - 📧 Email: rickyadamsaputra11@gmail.com
