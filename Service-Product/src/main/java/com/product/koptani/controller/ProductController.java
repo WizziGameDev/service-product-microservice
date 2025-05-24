@@ -5,6 +5,7 @@ import com.product.koptani.dto.ProductRequest;
 import com.product.koptani.dto.ProductResponse;
 import com.product.koptani.dto.WebResponse;
 import com.product.koptani.service.ProductServiceImpl;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,6 +17,7 @@ import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/api/v1")
+@Tag(name = "Products", description = "Operations related to product management (CRUD)")
 public class ProductController {
 
     @Autowired
@@ -34,7 +36,7 @@ public class ProductController {
     }
 
     @GetMapping(
-            value = "/product/{id}",
+            value = "/products/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public WebResponse<ProductResponse> getProductById(@PathVariable(value = "id") Integer id) {
@@ -46,7 +48,7 @@ public class ProductController {
     }
 
     @PostMapping(
-            value = "/product",
+            value = "/products",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
@@ -59,7 +61,7 @@ public class ProductController {
     }
 
     @PutMapping(
-            value = "/product/{id}",
+            value = "/products/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
@@ -73,7 +75,7 @@ public class ProductController {
     }
 
     @DeleteMapping(
-            value = "/product/{id}",
+            value = "/products/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public WebResponse<String> deleteProduct(@PathVariable(value = "id") Integer id) {
