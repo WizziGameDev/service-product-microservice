@@ -4,14 +4,13 @@ import com.product.koptani.dto.ProductListResponse;
 import com.product.koptani.dto.ProductRequest;
 import com.product.koptani.dto.ProductResponse;
 import com.product.koptani.entity.Product;
-import com.product.koptani.exception.ApiException;
+import com.product.koptani.exception.ProductException;
 import com.product.koptani.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -44,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
     @Cacheable(value = "ProductService.getProductById", key = "#id")
     public ProductResponse getProductById(Integer id) {
         Product product = productRepository.findByIdAndDeletedAtIsNull(id)
-                .orElseThrow(() -> new ApiException("Product Not Found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ProductException("Product Not Found"));
 
         return ProductResponse.builder()
                 .id(product.getId())
@@ -96,7 +95,7 @@ public class ProductServiceImpl implements ProductService {
     })
     public ProductResponse updateProduct(Integer id, ProductRequest productRequest) {
         Product product = productRepository.findByIdAndDeletedAtIsNull(id)
-                .orElseThrow(() -> new ApiException("Product Not Found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ProductException("Product Not Found"));
 
         product.setSlug(slugify(productRequest.getName()));
         product.setName(productRequest.getName());
@@ -129,7 +128,7 @@ public class ProductServiceImpl implements ProductService {
     })
     public String deleteProduct(Integer id) {
         Product product = productRepository.findByIdAndDeletedAtIsNull(id)
-                .orElseThrow(() -> new ApiException("Product Not Found", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ProductException("Product Not Found"));
 
         product.setDeletedAt(Instant.now().getEpochSecond());
         productRepository.save(product);

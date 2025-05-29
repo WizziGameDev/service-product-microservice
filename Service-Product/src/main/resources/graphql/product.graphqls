@@ -1,0 +1,54 @@
+""" PRODUCT LIST RESPONSE """
+type ProductListResponse {
+    id: Int!
+    slug: String!
+    name: String
+    price: BigDecimal
+    stock: Int
+    unit: String
+}
+
+""" PRODUCT RESPONSE """
+type ProductResponse {
+    id: Int!
+    slug: String!
+    name: String
+    description: String
+    price: BigDecimal
+    stock: Int
+    unit: String
+    createdAt: Long
+    updatedAt: Long
+}
+
+""" PRODUCT REQUEST """
+input ProductRequest {
+    name: String
+    description: String
+    price: BigDecimal
+    stock: Int
+    unit: String
+}
+
+type Query {
+    """ LIST PRODUCT """
+    products: [ProductListResponse]
+
+    """ PRODUCT BY ID """
+    productById(id: Int!): ProductResponse
+}
+
+type Mutation {
+    """ CREATE PRODUCT """
+    createProduct(input: ProductRequest!): ProductResponse
+
+    """ UPDATE PRODUCT """
+    updateProduct(id: Int!, input: ProductRequest!): ProductResponse
+
+    """ DELETE PRODUCT """
+    deleteProduct(id: Int!): String!
+}
+
+""" CUSTOM SCALAR """
+scalar Long
+scalar BigDecimal

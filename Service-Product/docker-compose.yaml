@@ -1,27 +1,40 @@
 version: '3.9'
 
+networks:
+  app-network-microservice:
+    external: true
+
 services:
+  # Consul Agent untuk service discovery di node service
+  consul:
+    image: consul:1.14
+    container_name: consul-service
+    command:
+      - agent
+      - -dev
+      - -client=0.0.0.0
+      - -bind=0.0.0.0
+    networks:
+      - app-network-microservice
+    # tidak perlu expose port Consul ke host
+
   mysql:
     image: mysql:8.0
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: 12345
       MYSQL_DATABASE: db_tubes_product
-    ports:
-      - "3392:3306"
     networks:
       - app-network-microservice
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
+      interval: 30s
+      timeout: 30s
       retries: 5
 
   redis:
     image: redis:alpine
     container_name: redis
-    ports:
-      - "6392:6379"
     networks:
       - app-network-microservice
 
@@ -31,12 +44,12 @@ services:
     environment:
       PMA_HOST: mysql
       PMA_PORT: 3306
-    ports:
-      - "8083:80"
     depends_on:
       - mysql
     networks:
       - app-network-microservice
+    ports:
+      - "8083:80"
 
   service-product:
     build:
@@ -48,6 +61,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+      consul:
+        condition: service_started
     environment:
       SPRING_PROFILES_ACTIVE: dev
       MYSQL_HOST: mysql
@@ -58,32 +73,40 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       SERVER_PORT: 9003
-      LOG_LEVEL_CACHE: TRACE
+      LOG_LEVEL_CACHE: DEBUG
       LOG_LEVEL: DEBUG
       LOG_LEVEL_WEB: DEBUG
-#    ports:
-#      - "9003:9003" -> akses luar ga bisa (lewat API Gateway)
+    command:
+      - sh
+      - -c
+      - |
+        java -jar app.jar --server.address=0.0.0.0 --server.port=9003 &
+        sleep 5 &&
+        consul services register \
+          -name=service-product \
+          -port=9003 \
+          -check-http=/actuator/health \
+          -check-interval=10s
+    networks:
+      - app-network-microservice
     labels:
       - "traefik.enable=true"
 
-      # Router utama service-product API
-      - "traefik.http.routers.service-product.rule=PathPrefix(`/api/v1/products`)"
+      # Middleware to add X-Forwarded-Prefix
+      - "traefik.http.middlewares.prefix-headers.headers.customrequestheaders.X-Forwarded-Prefix=/api/v1/products"
+
+      # 1) GraphQL API router
+      - "traefik.http.routers.service-product-gql.rule=PathPrefix(`/api/v1/products/graphql`)"
+      - "traefik.http.routers.service-product-gql.entrypoints=web"
+      - "traefik.http.routers.service-product-gql.service=service-product"
+      - "traefik.http.routers.service-product-gql.middlewares=prefix-headers"
+
+      # 2) GraphiQL UI router
+      - "traefik.http.routers.service-product-graphiql.rule=PathPrefix(`/api/v1/products/graphiql`)"
+      - "traefik.http.routers.service-product-graphiql.entrypoints=web"
+      - "traefik.http.routers.service-product-graphiql.service=service-product"
+      - "traefik.http.routers.service-product-graphiql.middlewares=prefix-headers"
+
+      # shared: target port di container-mu
       - "traefik.http.services.service-product.loadbalancer.server.port=9003"
-      - "traefik.http.routers.service-product.middlewares=ratelimit"
-
-      # Swagger UI router
-      - "traefik.http.routers.swagger-product.rule=PathPrefix(`/api/v1/product/swagger-ui`)"
-      - "traefik.http.routers.swagger-product.entrypoints=web"
-      - "traefik.http.routers.swagger-product.service=service-product"
-
-      # OpenAPI docs router
-      - "traefik.http.routers.api-docs.rule=PathPrefix(`/api/v1/product/v3/api-docs`)"
-      - "traefik.http.routers.api-docs.entrypoints=web"
-      - "traefik.http.routers.api-docs.service=service-product"
-    networks:
-      - app-network-microservice
     restart: on-failure
-
-networks:
-  app-network-microservice:
-    external: true
