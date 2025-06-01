@@ -22,4 +22,7 @@ public interface ProductService {
 
     // Delete Product By ID
     String deleteProduct(Integer id);
+
+    // Update Stock Product
+    public String updateStockProduct(Integer id, Integer stock);
 }

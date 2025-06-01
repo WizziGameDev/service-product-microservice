@@ -47,6 +47,11 @@ public class ProductResolver {
         return runVirtual(() -> productServiceImpl.deleteProduct(id));
     }
 
+    @MutationMapping
+    public String updateStockProduct(@Argument Integer id, @Argument Integer stock) {
+        return runVirtual(() -> productServiceImpl.updateStockProduct(id, stock));
+    }
+
     private <T> T runVirtual(Supplier<T> task) {
         final CompletableFuture<T> result = new CompletableFuture<>();
         Thread.startVirtualThread(() -> {

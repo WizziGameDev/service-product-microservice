@@ -47,6 +47,9 @@ type Mutation {
 
     """ DELETE PRODUCT """
     deleteProduct(id: Int!): String!
+
+    """ UPDATE STOCK """
+    updateStockProduct(id: Int!, stock: Int!): String!
 }
 
 """ CUSTOM SCALAR """

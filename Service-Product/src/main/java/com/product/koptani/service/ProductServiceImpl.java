@@ -136,6 +136,16 @@ public class ProductServiceImpl implements ProductService {
         return "Successfully deleted Product";
     }
 
+    @Transactional
+    public String updateStockProduct(Integer id, Integer stock) {
+        Product product = productRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ProductException("Product Not Found"));
+
+        product.setStock(stock);
+        productRepository.save(product);
+        return "Successfully updated Stock " + product.getName();
+    }
+
     public static String slugify(String input) {
         String baseSlug = input
                 .toLowerCase()
