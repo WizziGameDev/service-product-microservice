@@ -21,7 +21,9 @@ public class ProductResponse {
 
     private String description;
 
-    private BigDecimal price;
+    private BigDecimal priceForMember;
+
+    private BigDecimal priceFromMitra;
 
     private Integer stock;
 

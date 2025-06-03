@@ -19,7 +19,9 @@ public class ProductListResponse {
 
     private String name;
 
-    private BigDecimal price;
+    private BigDecimal priceForMember;
+
+    private BigDecimal priceFromMitra;
 
     private Integer stock;
 

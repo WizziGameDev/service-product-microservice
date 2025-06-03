@@ -26,8 +26,11 @@ public class Product {
 
     private String description;
 
-    @Column(precision = 15, scale = 2)
-    private BigDecimal price;
+    @Column(precision = 15, scale = 2, name = "price_for_member")
+    private BigDecimal priceForMember;
+
+    @Column(precision = 15, scale = 2, name = "price_from_mitra")
+    private BigDecimal priceFromMitra;
 
     private Integer stock;
 

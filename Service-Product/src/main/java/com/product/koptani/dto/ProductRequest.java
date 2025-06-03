@@ -28,7 +28,11 @@ public class ProductRequest {
 
     @NotNull(message = "Price is required")
     @DecimalMin(value = "0.01", inclusive = true, message = "Price must be greater than or equal to 0.01")
-    private BigDecimal price;
+    private BigDecimal priceForMember;
+
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.01", inclusive = true, message = "Price must be greater than or equal to 0.01")
+    private BigDecimal priceFromMitra;
 
     @NotNull(message = "Stock is required")
     @Positive(message = "Stock must be a positive integer")

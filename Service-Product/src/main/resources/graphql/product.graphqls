@@ -3,7 +3,8 @@ type ProductListResponse {
     id: Int!
     slug: String!
     name: String
-    price: BigDecimal
+    priceForMember: BigDecimal
+    priceFromMitra: BigDecimal
     stock: Int
     unit: String
 }
@@ -14,7 +15,8 @@ type ProductResponse {
     slug: String!
     name: String
     description: String
-    price: BigDecimal
+    priceForMember: BigDecimal
+    priceFromMitra: BigDecimal
     stock: Int
     unit: String
     createdAt: Long
@@ -25,7 +27,8 @@ type ProductResponse {
 input ProductRequest {
     name: String
     description: String
-    price: BigDecimal
+    priceForMember: BigDecimal
+    priceFromMitra: BigDecimal
     stock: Int
     unit: String
 }

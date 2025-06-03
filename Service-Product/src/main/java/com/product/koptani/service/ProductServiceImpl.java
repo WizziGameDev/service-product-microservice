@@ -32,7 +32,8 @@ public class ProductServiceImpl implements ProductService {
                         .id(data.getId())
                         .slug(data.getSlug())
                         .name(data.getName())
-                        .price(data.getPrice())
+                        .priceForMember(data.getPriceForMember())
+                        .priceFromMitra(data.getPriceFromMitra())
                         .stock(data.getStock())
                         .unit(data.getUnit())
                         .build())
@@ -50,7 +51,8 @@ public class ProductServiceImpl implements ProductService {
                 .slug(product.getSlug())
                 .name(product.getName())
                 .description(product.getDescription())
-                .price(product.getPrice())
+                .priceForMember(product.getPriceForMember())
+                .priceFromMitra(product.getPriceFromMitra())
                 .stock(product.getStock())
                 .unit(product.getUnit())
                 .createdAt(product.getCreatedAt())
@@ -67,7 +69,8 @@ public class ProductServiceImpl implements ProductService {
         product.setSlug(slugify(productRequest.getName()));
         product.setName(productRequest.getName());
         product.setDescription(productRequest.getDescription());
-        product.setPrice(productRequest.getPrice());
+        product.setPriceForMember(productRequest.getPriceForMember());
+        product.setPriceFromMitra(productRequest.getPriceFromMitra());
         product.setStock(productRequest.getStock());
         product.setUnit(productRequest.getUnit());
         product.setCreatedAt(Instant.now().getEpochSecond());
@@ -79,7 +82,8 @@ public class ProductServiceImpl implements ProductService {
                 .slug(saveProduct.getSlug())
                 .name(saveProduct.getName())
                 .description(saveProduct.getDescription())
-                .price(saveProduct.getPrice())
+                .priceForMember(saveProduct.getPriceForMember())
+                .priceFromMitra(saveProduct.getPriceFromMitra())
                 .stock(saveProduct.getStock())
                 .unit(saveProduct.getUnit())
                 .createdAt(saveProduct.getCreatedAt())
@@ -100,7 +104,8 @@ public class ProductServiceImpl implements ProductService {
         product.setSlug(slugify(productRequest.getName()));
         product.setName(productRequest.getName());
         product.setDescription(productRequest.getDescription());
-        product.setPrice(productRequest.getPrice());
+        product.setPriceForMember(productRequest.getPriceForMember());
+        product.setPriceFromMitra(productRequest.getPriceFromMitra());
         product.setStock(productRequest.getStock());
         product.setUnit(productRequest.getUnit());
         product.setUpdatedAt(Instant.now().getEpochSecond());
@@ -112,7 +117,8 @@ public class ProductServiceImpl implements ProductService {
                 .slug(saveProduct.getSlug())
                 .name(saveProduct.getName())
                 .description(saveProduct.getDescription())
-                .price(saveProduct.getPrice())
+                .priceForMember(saveProduct.getPriceForMember())
+                .priceFromMitra(saveProduct.getPriceFromMitra())
                 .stock(saveProduct.getStock())
                 .unit(saveProduct.getUnit())
                 .createdAt(saveProduct.getCreatedAt())
@@ -136,7 +142,12 @@ public class ProductServiceImpl implements ProductService {
         return "Successfully deleted Product";
     }
 
+    @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "ProductService.getProducts", key = "'products'"),
+            @CacheEvict(value = "ProductService.getProductById", key = "#id")
+    })
     public String updateStockProduct(Integer id, Integer stock) {
         Product product = productRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new ProductException("Product Not Found"));
